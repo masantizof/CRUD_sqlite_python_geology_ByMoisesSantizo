@@ -5,17 +5,16 @@ from random import randint, choice
 conn = sqlite3.connect('CRU_database.db')
 cursor = conn.cursor()
 
-# Creación de la tabla TopeFormaciones
-cursor.execute('''CREATE TABLE IF NOT EXISTS TopeFormaciones (
-                    id_Formacion INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                    Formacion TEXT NOT NULL UNIQUE,
+# Creación de las tablas TopeFormaciones, Metadata, EditTopeFormaciones y EditMetadata
+cursor.execute('''CREATE TABLE IF NOT EXISTS topeformaciones (
+                    id_topeformaciones INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                    Formacion TEXT NOT NULL,
                     base_md INTEGER,
                     tope_md INTEGER,
                     espesor_md INTEGER
                 )''')
 
-# Creación de la tabla Metadata
-cursor.execute('''CREATE TABLE IF NOT EXISTS Metadata (
+cursor.execute('''CREATE TABLE IF NOT EXISTS metadata (
                     id_metadata INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
                     Formacion TEXT NOT NULL,
                     compañia TEXT NOT NULL,
@@ -26,19 +25,17 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS Metadata (
                     latitud REAL
                 )''')
 
-# Creación de la tabla EditTopeFormaciones
-cursor.execute('''CREATE TABLE IF NOT EXISTS EditTopeFormaciones (
-                    id_Formacion INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                    Formacion TEXT NOT NULL UNIQUE,
+cursor.execute('''CREATE TABLE IF NOT EXISTS edittopeformaciones (
+                    id_edittopeformaciones INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+                    Formacion TEXT,
                     base_md INTEGER,
                     tope_md INTEGER,
                     espesor_md INTEGER,
-                    FOREIGN KEY (Formacion) REFERENCES TopeFormaciones(Formacion)
+                    FOREIGN KEY (Formacion) REFERENCES TopeFormaciones(Formacion) ON DELETE CASCADE ON UPDATE CASCADE
                 )''')
 
-# Creación de la tabla EditMetadata
-cursor.execute('''CREATE TABLE IF NOT EXISTS EditMetadata (
-                    id_metadata INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+cursor.execute('''CREATE TABLE IF NOT EXISTS editmetadata (
+                    id_editmetadata INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
                     Formacion TEXT NOT NULL,
                     compañia TEXT NOT NULL,
                     nombre_pozo TEXT NOT NULL,
@@ -46,7 +43,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS EditMetadata (
                     fecha_final DATE,
                     longitud REAL,
                     latitud REAL,
-                    FOREIGN KEY (Formacion) REFERENCES Metadata(Formacion)
+                    FOREIGN KEY (Formacion) REFERENCES Metadata(Formacion) ON DELETE CASCADE ON UPDATE CASCADE
                 )''')
 
 # Guardar los cambios y cerrar la conexión
@@ -54,7 +51,6 @@ conn.commit()
 conn.close()
 
 print("Base de datos creada exitosamente.")
-
 
 # Conexión a la base de datos
 conn = sqlite3.connect('CRU_database.db')
@@ -88,6 +84,20 @@ for formacion in Formacion:
     compania_random = choice(compañia)  # Se elige una compañía aleatoria
     pozo_random = choice(nombre_pozo)   # Se elige un pozo aleatorio
     cursor.execute("INSERT INTO Metadata (Formacion, compañia, nombre_pozo, fecha_inicio, fecha_final, longitud, latitud) VALUES (?,?,?,?,?,?,?)", (formacion, compania_random, pozo_random, fecha_inicio, fecha_final, longitud, latitud))
+
+# Inserción de datos en la tabla EditTopeFormaciones
+try:
+    cursor.execute("INSERT INTO EditTopeFormaciones (Formacion, base_md, tope_md, espesor_md) SELECT Formacion, base_md, tope_md, espesor_md FROM TopeFormaciones")
+    print("La inserción de datos se ejecutó correctamente en EditTopeFormaciones.")
+except Exception as e:
+    print("Ocurrió un error al insertar los datos en EditTopeFormaciones:", e)
+
+# Inserción de datos en la tabla EditMetadata
+try:
+    cursor.execute("INSERT INTO EditMetadata (Formacion, compañia, nombre_pozo, fecha_inicio, fecha_final, longitud, latitud) SELECT Formacion, compañia, nombre_pozo, fecha_inicio, fecha_final, longitud, latitud FROM Metadata")
+    print("La inserción de datos se ejecutó correctamente en EditMetadata.")
+except Exception as e:
+    print("Ocurrió un error al insertar los datos en EditMetadata:", e)
 
 # Guardar los cambios y cerrar la conexión
 conn.commit()

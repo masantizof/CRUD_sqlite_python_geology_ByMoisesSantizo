@@ -8,7 +8,7 @@ cursor = conn.cursor()
 # Creación de las tablas TopeFormaciones, Metadata, EditTopeFormaciones y EditMetadata
 cursor.execute('''CREATE TABLE IF NOT EXISTS topeformaciones (
                     id_topeformaciones INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                    Formacion TEXT NOT NULL,
+                    Formacion TEXT NOT NULL UNIQUE,
                     base_md INTEGER,
                     tope_md INTEGER,
                     espesor_md INTEGER
@@ -16,7 +16,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS topeformaciones (
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS metadata (
                     id_metadata INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-                    Formacion TEXT NOT NULL,
+                    Formacion TEXT NOT NULL UNIQUE,
                     compañia TEXT NOT NULL,
                     nombre_pozo TEXT NOT NULL,
                     fecha_inicio DATE,

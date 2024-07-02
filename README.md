@@ -1,6 +1,4 @@
 # CRUD_sqlite_python_geology_ByMoisesSantizo
-Pequeño ensayo de una DB y una interfaz grafica, creados con python y sqlite, con un enfoque para la geología 
+Small test of a DB and a graphical interface, created with python and sqlite, with a focus on geology.
 
-
-Para ejecutar los cambios, ejecute el script de la base de datos 
-vercion 1.0 
+To execute the changes, run the database script version 1.0
